@@ -1,0 +1,46 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2022": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "commonjs"
+  },
+  "rules": {
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-console": ["warn", { "allow": ["error", "warn", "log"] }],
+    "eqeqeq": ["error", "always"],
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-new-func": "error",
+    "no-prototype-builtins": "error",
+    "prefer-const": "warn",
+    "no-var": "warn",
+    "curly": ["warn", "all"],
+    "no-throw-literal": "error"
+  },
+  "overrides": [
+    {
+      "files": ["src/app.js", "src/setup.js"],
+      "env": {
+        "browser": true,
+        "node": false
+      },
+      "parserOptions": {
+        "sourceType": "script"
+      },
+      "globals": {
+        "window": "readonly",
+        "document": "readonly",
+        "navigator": "readonly",
+        "confirm": "readonly",
+        "Image": "readonly",
+        "File": "readonly",
+        "FileReader": "readonly",
+        "requestAnimationFrame": "readonly"
+      }
+    }
+  ]
+}

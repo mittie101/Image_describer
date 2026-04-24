@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup - Image Description Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="setup-container">
+        <div class="setup-card">
+            <h1>Welcome to Image Description Generator</h1>
+            <p class="subtitle">Multi-AI Provider Support - Choose Your Preferred Service</p>
+            
+            <div class="provider-info">
+                <div class="provider-option">
+                    <h3>🤖 OpenAI</h3>
+                    <p>GPT-4o, GPT-4o-mini, GPT-4 Turbo</p>
+                    <code>Key starts with: sk-</code>
+                </div>
+                <div class="provider-option">
+                    <h3>🧠 Anthropic</h3>
+                    <p>Claude 3.5 Sonnet, Haiku, Opus</p>
+                    <code>Key starts with: sk-ant-</code>
+                </div>
+                <div class="provider-option">
+                    <h3>✨ Google</h3>
+                    <p>Gemini 1.5 Flash, Pro</p>
+                    <code>Key starts with: AIzaSy</code>
+                </div>
+            </div>
+            
+            <div class="setup-form">
+                <div class="form-group">
+                    <label for="apiKey">Enter Your API Key (Any Provider)</label>
+                    <div class="input-with-toggle">
+                        <input 
+                            type="password" 
+                            id="apiKey" 
+                            placeholder="Paste your API key here - we'll auto-detect the provider" 
+                            autocomplete="off"
+                        >
+                        <button type="button" class="toggle-visibility" id="toggleKey">
+                            <span class="show-icon">👁️</span>
+                        </button>
+                    </div>
+                    <small>🔒 Your API key is encrypted and stored securely using Windows Credential Manager. It never leaves your device.</small>
+                </div>
+
+                <div class="info-box">
+                    <p><strong>Don't have an API key?</strong></p>
+                    <p>
+                        Get one from: 
+                        <a href="#" class="provider-link" data-url="https://platform.openai.com/api-keys">OpenAI</a> | 
+                        <a href="#" class="provider-link" data-url="https://console.anthropic.com/settings/keys">Anthropic</a> | 
+                        <a href="#" class="provider-link" data-url="https://aistudio.google.com/app/apikey">Google</a>
+                    </p>
+                    <p class="info-note">💰 Estimated cost: $0.0005-0.005 per image depending on provider</p>
+                </div>
+
+                <button class="btn-primary" id="validateBtn">
+                    <span id="btnText">Validate & Continue</span>
+                    <span id="btnLoader" class="loader hidden"></span>
+                </button>
+
+                <div id="errorMsg" class="error-msg hidden"></div>
+                <div id="successMsg" class="success-msg hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="setup.js"></script>
+</body>
+</html>

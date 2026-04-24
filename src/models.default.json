@@ -1,0 +1,19 @@
+{
+  "_version": 1,
+  "_comment": "Pricing in USD per 1 million tokens. Edit this file to add or update models.",
+  "models": {
+    "gpt-4.1":                      { "input": 2.00,  "output": 8.00,  "provider": "openai",    "name": "GPT-4.1 (Latest)" },
+    "gpt-4.1-mini":                 { "input": 0.40,  "output": 1.60,  "provider": "openai",    "name": "GPT-4.1 Mini (Fast)" },
+    "gpt-4o":                       { "input": 2.50,  "output": 10.00, "provider": "openai",    "name": "GPT-4o (High Quality)" },
+    "gpt-4o-mini":                  { "input": 0.15,  "output": 0.60,  "provider": "openai",    "name": "GPT-4o Mini (Cheap)" },
+    "o4-mini":                      { "input": 1.10,  "output": 4.40,  "provider": "openai",    "name": "o4-mini (Reasoning)" },
+    "claude-opus-4-20250514":       { "input": 15.00, "output": 75.00, "provider": "anthropic", "name": "Claude Opus 4 (Best)" },
+    "claude-sonnet-4-20250514":     { "input": 3.00,  "output": 15.00, "provider": "anthropic", "name": "Claude Sonnet 4 (Balanced)" },
+    "claude-3-5-sonnet-20241022":   { "input": 3.00,  "output": 15.00, "provider": "anthropic", "name": "Claude 3.5 Sonnet" },
+    "claude-3-5-haiku-20241022":    { "input": 0.80,  "output": 4.00,  "provider": "anthropic", "name": "Claude 3.5 Haiku (Fast)" },
+    "gemini-2.5-pro-preview-05-06": { "input": 1.25,  "output": 10.00, "provider": "google",    "name": "Gemini 2.5 Pro (Advanced)" },
+    "gemini-2.0-flash":             { "input": 0.10,  "output": 0.40,  "provider": "google",    "name": "Gemini 2.0 Flash (Fast)" },
+    "gemini-1.5-flash":             { "input": 0.075, "output": 0.30,  "provider": "google",    "name": "Gemini 1.5 Flash" },
+    "gemini-1.5-pro":               { "input": 1.25,  "output": 5.00,  "provider": "google",    "name": "Gemini 1.5 Pro" }
+  }
+}

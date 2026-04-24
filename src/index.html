@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Description Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Global renderer error banner -->
+    <div id="errorBanner" role="alert" aria-live="assertive" class="error-banner hidden"></div>
+    <!-- SVG Icon Sprite -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon-sprite hidden" aria-hidden="true">
+        <symbol id="icon-history" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        </symbol>
+        <symbol id="icon-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+        </symbol>
+        <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </symbol>
+        <symbol id="icon-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+        </symbol>
+        <symbol id="icon-images" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2"/>
+            <path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/>
+        </symbol>
+        <symbol id="icon-compare" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"/>
+            <polyline points="23 20 23 14 17 14"/>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/>
+        </symbol>
+        <symbol id="icon-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </symbol>
+        <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+        </symbol>
+        <symbol id="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </symbol>
+        <symbol id="icon-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+        </symbol>
+        <symbol id="icon-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"/>
+            <polyline points="23 20 23 14 17 14"/>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/>
+        </symbol>
+        <symbol id="icon-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        </symbol>
+        <symbol id="icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+        </symbol>
+        <symbol id="icon-dollar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </symbol>
+        <symbol id="icon-hash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="9" x2="20" y2="9"/>
+            <line x1="4" y1="15" x2="20" y2="15"/>
+            <line x1="10" y1="3" x2="8" y2="21"/>
+            <line x1="16" y1="3" x2="14" y2="21"/>
+        </symbol>
+        <symbol id="icon-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+        </symbol>
+        <symbol id="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+        </symbol>
+        <symbol id="icon-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </symbol>
+        <symbol id="icon-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+        </symbol>
+        <symbol id="icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+            <line x1="7" y1="7" x2="7.01" y2="7"/>
+        </symbol>
+        <symbol id="icon-shopping-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+        </symbol>
+    </svg>
+
+    <!-- ARIA live region for screen reader announcements -->
+    <div id="ariaAnnouncer" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>Image Description Generator</h1>
+            <div class="header-actions">
+                <button class="btn-icon" id="themeToggleBtn" title="Toggle light/dark theme" aria-label="Toggle theme">
+                    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+                <button class="btn-icon" id="shortcutsBtn" title="Keyboard shortcuts (Ctrl+/)" aria-label="Show keyboard shortcuts">
+                    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 8h2M7 12h2M7 16h10M13 8h4M13 12h4"/></svg>
+                </button>
+                <button class="btn-icon" id="historyBtn" title="History" aria-label="Open history sidebar">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-history"/></svg>
+                    <span class="badge" id="historyCount">0</span>
+                </button>
+                <button class="btn-icon" id="dashboardBtn" title="Dashboard" aria-label="Open usage dashboard">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-chart"/></svg>
+                </button>
+                <button class="btn-icon" id="settingsBtn" title="Settings" aria-label="Open settings">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-settings"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <!-- History Sidebar -->
+            <aside class="history-sidebar hidden" id="historySidebar" aria-label="History sidebar">
+                <div class="sidebar-header">
+                    <h2>History</h2>
+                    <div class="sidebar-actions">
+                        <button class="btn-icon-small" id="clearHistoryBtn" title="Clear all" aria-label="Clear all history">
+                            <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
+                        </button>
+                        <button class="btn-icon-small" id="exportHistoryBtn" title="Export history" aria-label="Export history to JSON">&#8595;</button>
+                        <button class="btn-icon-small" id="importHistoryBtn" title="Import history" aria-label="Import history from JSON">&#8593;</button>
+                        <button class="btn-icon-small" id="closeHistoryBtn" title="Close" aria-label="Close history">
+                            <svg class="icon" aria-hidden="true"><use href="#icon-close"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="history-search">
+                    <input type="text" id="historySearch" placeholder="Search history..." aria-label="Search history">
+                </div>
+                <div class="history-list" id="historyList" aria-label="History items" aria-live="polite">
+                    <p class="empty-state">No history yet</p>
+                </div>
+            </aside>
+            <div class="sidebar-resize-handle" id="sidebarResizeHandle" aria-hidden="true" title="Drag to resize"></div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Mode Selector -->
+                <div class="mode-selector" role="tablist" aria-label="Processing mode">
+                    <button class="mode-btn active" data-mode="single" role="tab" aria-selected="true">
+                        <svg class="icon" aria-hidden="true"><use href="#icon-camera"/></svg>
+                        Single Image
+                    </button>
+                    <button class="mode-btn" data-mode="batch" role="tab" aria-selected="false">
+                        <svg class="icon" aria-hidden="true"><use href="#icon-images"/></svg>
+                        Batch Process
+                    </button>
+                    <button class="mode-btn" data-mode="compare" role="tab" aria-selected="false">
+                        <svg class="icon" aria-hidden="true"><use href="#icon-compare"/></svg>
+                        Compare
+                    </button>
+                </div>
+
+                <!-- Single Image Mode -->
+                <div class="mode-panel active" id="singleMode" role="tabpanel">
+                    <div class="content-grid">
+                        <!-- Left: Image Upload -->
+                        <div class="left-panel">
+                            <div class="upload-section">
+                                <div id="dropZone" class="drop-zone" role="button" tabindex="0" aria-label="Drop image here or click to browse">
+                                    <div class="drop-zone-content">
+                                        <svg class="upload-icon-svg" aria-hidden="true"><use href="#icon-upload"/></svg>
+                                        <p>Drag &amp; drop an image here</p>
+                                        <p class="or-text">or</p>
+                                        <button class="btn-secondary" id="browseBtn">Browse Files</button>
+                                        <input type="file" id="fileInput" accept="image/*" class="sr-only hidden" aria-label="Select image file">
+                                        <p class="file-types">Supports: JPG, PNG, WebP</p>
+                                        <p class="shortcut-hint">Tip: Press Ctrl+V to paste from clipboard</p>
+                                    </div>
+                                </div>
+
+                                <div id="imagePreview" class="image-preview hidden">
+                                    <img id="previewImg" src="" alt="Image preview">
+                                    <button class="btn-clear" id="clearBtn">Clear Image</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Controls & Output -->
+                        <div class="right-panel">
+                            <div class="controls-section">
+                                <h2>Generation Settings</h2>
+
+                                <!-- Template Selection -->
+                                <div class="form-group">
+                                    <label for="templateSelect">
+                                        Template
+                                        <button class="btn-link" id="saveTemplateBtn">+ Save Current</button>
+                                    </label>
+                                    <select id="templateSelect">
+                                        <option value="">Custom Settings</option>
+                                    </select>
+                                </div>
+
+                                <!-- Style Selection -->
+                                <div class="form-group">
+                                    <label for="styleSelect">Style</label>
+                                    <select id="styleSelect">
+                                        <optgroup label="Photography">
+                                            <option value="photorealistic">Photorealistic</option>
+                                            <option value="product">Product Photography</option>
+                                            <option value="portrait">Portrait</option>
+                                            <option value="landscape">Landscape</option>
+                                            <option value="macro">Macro Photography</option>
+                                            <option value="aerial">Aerial/Drone</option>
+                                            <option value="street">Street Photography</option>
+                                            <option value="food">Food Photography</option>
+                                            <option value="fashion">Fashion Photography</option>
+                                            <option value="architectural">Architectural</option>
+                                        </optgroup>
+                                        <optgroup label="Illustration &amp; Art">
+                                            <option value="cartoon">Cartoon</option>
+                                            <option value="anime">Anime</option>
+                                            <option value="manga">Manga</option>
+                                            <option value="comic-book">Comic Book</option>
+                                            <option value="illustration">Digital Illustration</option>
+                                            <option value="watercolor">Watercolor</option>
+                                            <option value="oil-painting">Oil Painting</option>
+                                            <option value="sketch">Pencil Sketch</option>
+                                            <option value="ink-drawing">Ink Drawing</option>
+                                            <option value="line-art">Line Art</option>
+                                        </optgroup>
+                                        <optgroup label="Digital / Modern">
+                                            <option value="3d-render">3D Render</option>
+                                            <option value="pixel-art">Pixel Art</option>
+                                            <option value="vector-art">Vector Art</option>
+                                            <option value="low-poly">Low Poly</option>
+                                            <option value="isometric">Isometric</option>
+                                            <option value="voxel">Voxel Art</option>
+                                        </optgroup>
+                                        <optgroup label="Cinematic &amp; Artistic">
+                                            <option value="cinematic">Cinematic</option>
+                                            <option value="noir">Film Noir</option>
+                                            <option value="vintage">Vintage</option>
+                                            <option value="retro">Retro</option>
+                                            <option value="abstract">Abstract</option>
+                                            <option value="minimalist">Minimalist</option>
+                                            <option value="surreal">Surreal</option>
+                                        </optgroup>
+                                        <optgroup label="Genre / Aesthetic">
+                                            <option value="cyberpunk">Cyberpunk</option>
+                                            <option value="steampunk">Steampunk</option>
+                                            <option value="fantasy">Fantasy Art</option>
+                                            <option value="sci-fi">Sci-Fi</option>
+                                            <option value="horror">Horror</option>
+                                        </optgroup>
+                                        <optgroup label="Historical / Cultural">
+                                            <option value="art-deco">Art Deco</option>
+                                            <option value="art-nouveau">Art Nouveau</option>
+                                            <option value="ukiyo-e">Ukiyo-e (Japanese)</option>
+                                            <option value="impressionist">Impressionist</option>
+                                            <option value="expressionist">Expressionist</option>
+                                        </optgroup>
+                                        <optgroup label="Commercial">
+                                            <option value="advertisement">Advertisement</option>
+                                            <option value="editorial">Editorial</option>
+                                            <option value="infographic">Infographic Style</option>
+                                            <option value="technical">Technical Drawing</option>
+                                        </optgroup>
+                                        <optgroup label="Utility">
+                                            <option value="ocr">OCR / Text Extraction</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+
+                                <!-- Detail Level -->
+                                <div class="form-group">
+                                    <label for="detailLevel">Detail Level: <span id="detailValue">Standard</span></label>
+                                    <input type="range" id="detailLevel" min="1" max="3" value="2" step="1" aria-valuetext="Standard">
+                                    <div class="range-labels" aria-hidden="true">
+                                        <span>Concise</span>
+                                        <span>Standard</span>
+                                        <span>Detailed</span>
+                                    </div>
+                                </div>
+
+                                <!-- Model Selection -->
+                                <div class="form-group">
+                                    <label for="modelSelect">Model</label>
+                                    <select id="modelSelect">
+                                        <option value="gpt-4o-mini">GPT-4o Mini (Fast &amp; Cheap)</option>
+                                        <option value="gpt-4o">GPT-4o (High Quality)</option>
+                                    </select>
+                                    <small class="model-pricing" id="modelPricing">~$0.001-0.003 per image</small>
+                                </div>
+
+                                <!-- Midjourney Parameters -->
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="enableMidjourneyParams">
+                                        Add Midjourney Parameters
+                                    </label>
+                                </div>
+
+                                <div id="midjourneyParams" class="hidden">
+                                    <div class="mj-params-grid">
+                                        <div class="form-group">
+                                            <label for="mjAspectRatio">Aspect Ratio</label>
+                                            <select id="mjAspectRatio">
+                                                <option value="">Default</option>
+                                                <option value="1:1">1:1 (Square)</option>
+                                                <option value="16:9">16:9 (Widescreen)</option>
+                                                <option value="9:16">9:16 (Portrait)</option>
+                                                <option value="4:3">4:3 (Standard)</option>
+                                                <option value="3:2">3:2 (Photo)</option>
+                                                <option value="21:9">21:9 (Ultrawide)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="mjStylize">Stylize (0-1000)</label>
+                                            <input type="number" id="mjStylize" min="0" max="1000" placeholder="100">
+                                            <small>Higher = more artistic</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="mjChaos">Chaos (0-100)</label>
+                                            <input type="number" id="mjChaos" min="0" max="100" placeholder="0">
+                                            <small>Higher = more varied results</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="mjSeed">Seed</label>
+                                            <input type="number" id="mjSeed" placeholder="Random">
+                                            <small>For reproducible results</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="mjQuality">Quality</label>
+                                            <select id="mjQuality">
+                                                <option value="">Default</option>
+                                                <option value="0.25">.25 (Fast draft)</option>
+                                                <option value="0.5">.5 (Draft)</option>
+                                                <option value="1">1 (Standard)</option>
+                                                <option value="2">2 (High quality)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cost Estimator -->
+                                <div class="cost-estimator hidden" id="costEstimator" aria-live="polite">
+                                    <span class="cost-estimator-label">Est. cost:</span>
+                                    <span class="cost-estimator-value" id="estimatedCost">~$0.0000</span>
+                                    <span class="cost-estimator-hint">(based on image size)</span>
+                                </div>
+
+                                <button class="btn-primary btn-large" id="generateBtn" disabled aria-busy="false" aria-label="Generate image description">
+                                    <span id="genBtnText">Generate Description</span>
+                                    <span id="genBtnLoader" class="loader hidden" aria-hidden="true"></span>
+                                </button>
+
+                                <div id="statusMsg" class="status-msg hidden" role="status" aria-live="polite"></div>
+                            </div>
+
+                            <div class="output-section" role="region" aria-label="Generated description output">
+                                <h2>Generated Description</h2>
+                                <div class="output-toolbar">
+                                    <button class="btn-icon-small" id="editModeBtn" title="Edit description" aria-label="Edit description">
+                                        <svg class="icon" aria-hidden="true"><use href="#icon-edit"/></svg>
+                                    </button>
+                                </div>
+                                <textarea
+                                    id="outputText"
+                                    placeholder="Your AI-generated image description will appear here..."
+                                    aria-label="Generated description"
+                                ></textarea>
+
+                                <div class="output-actions">
+                                    <button class="btn-secondary" id="copyBtn" disabled aria-label="Copy description">
+                                        <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg>
+                                        Copy
+                                    </button>
+                                    <button class="btn-secondary" id="exportBtn" disabled aria-label="Export description">
+                                        <svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg>
+                                        Export
+                                    </button>
+                                    <button class="btn-secondary" id="regenerateBtn" disabled aria-label="Regenerate description">
+                                        <svg class="icon" aria-hidden="true"><use href="#icon-refresh"/></svg>
+                                        Regenerate
+                                    </button>
+                                    <button class="btn-secondary" id="redbubblePitchBtn" disabled aria-label="Generate Redbubble listing">
+                                        <svg class="icon" aria-hidden="true"><use href="#icon-tag"/></svg>
+                                        Redbubble Listing
+                                    </button>
+                                    <button class="btn-secondary" id="etsyListingBtn" disabled aria-label="Generate Etsy listing">
+                                        <svg class="icon" aria-hidden="true"><use href="#icon-shopping-bag"/></svg>
+                                        Etsy Listing
+                                    </button>
+                                </div>
+
+                                <div class="cost-info">
+                                    <div class="cost-item">
+                                        <span class="cost-label">This Image:</span>
+                                        <span class="cost-value" id="imageCost">$0.00</span>
+                                    </div>
+                                    <div class="cost-item">
+                                        <span class="cost-label">Session:</span>
+                                        <span class="cost-value" id="sessionCost">$0.00</span>
+                                    </div>
+                                    <div class="cost-item">
+                                        <span class="cost-label">Tokens:</span>
+                                        <span class="cost-value" id="tokensUsed">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Redbubble Sales Pitch -->
+                <div id="redbubbleSection" class="redbubble-section hidden" role="region" aria-label="Redbubble listing output">
+                    <div class="redbubble-header">
+                        <h2>
+                            <svg class="icon" aria-hidden="true"><use href="#icon-tag"/></svg>
+                            Redbubble Listing
+                        </h2>
+                        <div class="redbubble-header-actions">
+                            <button class="btn-secondary btn-sm" id="redbubbleCopyBtn" aria-label="Copy Redbubble listing">
+                                <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg>
+                                Copy
+                            </button>
+                            <button class="btn-secondary btn-sm" id="redbubbleExportBtn" aria-label="Export Redbubble listing">
+                                <svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg>
+                                Export
+                            </button>
+                            <button class="btn-icon-small" id="closeRedbubbleBtn" title="Close" aria-label="Close Redbubble section">
+                                <svg class="icon" aria-hidden="true"><use href="#icon-close"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="redbubbleOutput" class="redbubble-output" aria-live="polite"></div>
+                    <div class="cost-info">
+                        <div class="cost-item">
+                            <span class="cost-label">Listing Cost:</span>
+                            <span class="cost-value" id="redbubbleCost">$0.0000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etsy Listing -->
+                <div id="etsySection" class="redbubble-section hidden" role="region" aria-label="Etsy listing output">
+                    <div class="redbubble-header">
+                        <h2>
+                            <svg class="icon" aria-hidden="true"><use href="#icon-shopping-bag"/></svg>
+                            Etsy Listing
+                        </h2>
+                        <div class="redbubble-header-actions">
+                            <span id="etsyCost" class="cost-badge">$0.0000</span>
+                            <button class="btn-secondary btn-sm" id="etsyCopyBtn" aria-label="Copy Etsy listing">
+                                <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg>
+                                Copy
+                            </button>
+                            <button class="btn-secondary btn-sm" id="etsyExportBtn" aria-label="Export Etsy listing">
+                                <svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg>
+                                Export
+                            </button>
+                            <button class="btn-icon-small" id="closeEtsyBtn" title="Close" aria-label="Close Etsy section">
+                                <svg class="icon" aria-hidden="true"><use href="#icon-close"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="etsyOutput" class="redbubble-output" aria-live="polite">
+                        <p class="redbubble-loading">Click "Etsy Listing" to generate a listing.</p>
+                    </div>
+                </div>
+
+                <!-- Batch Mode -->
+                <div class="mode-panel hidden" id="batchMode" role="tabpanel">
+                    <div class="settings-summary">
+                        <strong>Using settings:</strong>
+                        <span id="batchSettingsSummary">Loading...</span>
+                    </div>
+                    <div class="batch-postprocess-section">
+                        <label class="setting-label">After generation, also create:</label>
+                        <div class="batch-postprocess-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="batchGenRedbubble"> Redbubble pitch
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="batchGenEtsy"> Etsy listing
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="batch-container">
+                        <div class="batch-upload">
+                            <div id="batchDropZone" class="drop-zone" role="button" tabindex="0" aria-label="Drop multiple images here or click to browse">
+                                <div class="drop-zone-content">
+                                    <svg class="upload-icon-svg" aria-hidden="true"><use href="#icon-upload"/></svg>
+                                    <p>Drop multiple images here (up to 20)</p>
+                                    <p class="or-text">or</p>
+                                    <button class="btn-secondary" id="batchBrowseBtn">Browse Files</button>
+                                    <input type="file" id="batchFileInput" accept="image/*" multiple class="hidden" aria-label="Select multiple image files">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="batch-queue hidden" id="batchQueue">
+                            <div class="batch-header">
+                                <h2>Batch Queue (<span id="batchCount">0</span> images)</h2>
+                                <div class="batch-controls">
+                                    <button class="btn-primary" id="batchStartBtn">
+                                        <svg class="icon" aria-hidden="true"><use href="#icon-play"/></svg>
+                                        Start Processing
+                                    </button>
+                                    <button class="btn-secondary" id="batchClearBtn">Clear Queue</button>
+                                </div>
+                            </div>
+
+                            <div class="batch-progress hidden" id="batchProgress" role="status" aria-live="polite">
+                                <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                                    <div class="progress-fill" id="batchProgressFill"></div>
+                                </div>
+                                <p class="progress-text">
+                                    Processing: <span id="batchCurrent">0</span> / <span id="batchTotal">0</span>
+                                </p>
+                                <div class="batch-active-file" id="batchActiveFile" aria-live="polite"></div>
+                                <div class="batch-elapsed">Elapsed: <span id="batchElapsed">0s</span></div>
+                                <button class="btn-danger" id="batchCancelBtn">Cancel</button>
+                            </div>
+
+                            <div class="batch-list" id="batchList"></div>
+
+                            <div class="batch-export hidden" id="batchExport">
+                                <h3>Export Results</h3>
+                                <div class="export-options">
+                                    <button class="btn-secondary" id="exportBatchTxt">
+                                        <svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg>
+                                        Export as TXT
+                                    </button>
+                                    <button class="btn-secondary" id="exportBatchMd">
+                                        <svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg>
+                                        Export as MD
+                                    </button>
+                                    <button class="btn-secondary" id="exportBatchCsv">
+                                        <svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg>
+                                        Export as CSV
+                                    </button>
+                                    <button class="btn-secondary" id="exportBatchJson">
+                                        <svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg>
+                                        Export as JSON
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compare Mode -->
+                <div class="mode-panel hidden" id="compareMode" role="tabpanel">
+                    <div class="settings-summary">
+                        <strong>Using settings:</strong>
+                        <span id="compareSettingsSummary">Loading...</span>
+                    </div>
+
+                    <div class="compare-container">
+                        <div class="compare-upload">
+                            <div id="compareDropZone" class="drop-zone" role="button" tabindex="0" aria-label="Drop image for comparison or click to browse">
+                                <div class="drop-zone-content">
+                                    <svg class="upload-icon-svg" aria-hidden="true"><use href="#icon-upload"/></svg>
+                                    <p>Drop image for comparison</p>
+                                    <button class="btn-secondary" id="compareBrowseBtn">Browse</button>
+                                    <input type="file" id="compareFileInput" accept="image/*" class="hidden" aria-label="Select image for comparison">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="compare-controls hidden" id="compareControls">
+                            <h2>Generate 3 Variations</h2>
+                            <button class="btn-primary btn-large" id="compareGenerateBtn">
+                                <svg class="icon" aria-hidden="true"><use href="#icon-compare"/></svg>
+                                Generate Variations
+                            </button>
+                        </div>
+
+                        <div class="compare-results hidden" id="compareResults">
+                            <div class="comparison-grid" id="comparisonGrid"></div>
+                        </div>
+
+                        <div class="provider-compare-section hidden" id="providerCompareSection">
+                            <h3>Provider Comparison</h3>
+                            <p class="text-muted">Generate descriptions from all configured providers for the same image, side-by-side.</p>
+                            <button class="btn-primary" id="compareProvidersBtn" disabled>
+                                <svg class="icon" aria-hidden="true"><use href="#icon-compare"/></svg>
+                                Compare All Providers
+                            </button>
+                            <div id="providerCompareResults" class="provider-compare-results hidden"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modals -->
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h2 id="settingsModalTitle">Settings</h2>
+                    <button class="btn-close" id="closeSettingsModal" aria-label="Close settings">
+                        <svg class="icon" aria-hidden="true"><use href="#icon-close"/></svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-tabs" role="tablist">
+                        <button class="tab-btn active" data-tab="api" role="tab" aria-selected="true">API Keys</button>
+                        <button class="tab-btn" data-tab="preferences" role="tab" aria-selected="false">Preferences</button>
+                        <button class="tab-btn" data-tab="about" role="tab" aria-selected="false">About</button>
+                    </div>
+
+                    <!-- IMPROVEMENT 1: Per-provider key management -->
+                    <div class="tab-content active" id="apiTab" role="tabpanel">
+                        <div class="settings-group">
+                            <h3>API Keys</h3>
+                            <p class="settings-hint">Configure keys for one or more providers. Models from all connected providers will be available.</p>
+
+                            <div class="provider-key-row" data-provider="openai">
+                                <div class="provider-key-info">
+                                    <span class="provider-key-name">🤖 OpenAI</span>
+                                    <span class="provider-status-indicator" data-provider="openai">Checking...</span>
+                                </div>
+                                <div class="provider-key-actions">
+                                    <button class="btn-secondary btn-sm provider-add-btn" data-provider="openai">Add / Replace Key</button>
+                                    <button class="btn-danger btn-sm provider-delete-btn" data-provider="openai" disabled>Remove</button>
+                                </div>
+                            </div>
+
+                            <div class="provider-key-row" data-provider="anthropic">
+                                <div class="provider-key-info">
+                                    <span class="provider-key-name">🧠 Anthropic</span>
+                                    <span class="provider-status-indicator" data-provider="anthropic">Checking...</span>
+                                </div>
+                                <div class="provider-key-actions">
+                                    <button class="btn-secondary btn-sm provider-add-btn" data-provider="anthropic">Add / Replace Key</button>
+                                    <button class="btn-danger btn-sm provider-delete-btn" data-provider="anthropic" disabled>Remove</button>
+                                </div>
+                            </div>
+
+                            <div class="provider-key-row" data-provider="google">
+                                <div class="provider-key-info">
+                                    <span class="provider-key-name">✨ Google</span>
+                                    <span class="provider-status-indicator" data-provider="google">Checking...</span>
+                                </div>
+                                <div class="provider-key-actions">
+                                    <button class="btn-secondary btn-sm provider-add-btn" data-provider="google">Add / Replace Key</button>
+                                    <button class="btn-danger btn-sm provider-delete-btn" data-provider="google" disabled>Remove</button>
+                                </div>
+                            </div>
+
+                            <div class="settings-group-separator"></div>
+                            <button class="btn-secondary" id="changeKeyBtn">Setup Wizard</button>
+                            <button class="btn-danger" id="deleteKeyBtn">Delete All Keys &amp; Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="preferencesTab" role="tabpanel">
+                        <div class="settings-group">
+                            <h3>Image Processing</h3>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="autoCompressCheck" checked>
+                                    Auto-compress images (recommended for faster processing)
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="compressionQuality">Compression Quality: <span id="compressionValue">80</span>%</label>
+                                <input type="range" id="compressionQuality" min="50" max="100" value="80" step="5">
+                            </div>
+                        </div>
+                        <div class="settings-group">
+                            <h3>Batch Processing</h3>
+                            <div class="form-group">
+                                <label for="concurrencySelect">Concurrent Requests</label>
+                                <select id="concurrencySelect">
+                                    <option value="1">1 — Sequential (safest, avoids rate limits)</option>
+                                    <option value="2" selected>2 — Balanced (recommended)</option>
+                                    <option value="3">3 — Fast</option>
+                                    <option value="5">5 — Maximum (risk of rate limits)</option>
+                                </select>
+                                <small>Number of images processed simultaneously in batch mode</small>
+                            </div>
+                        </div>
+                        <div class="settings-group">
+                            <h3>Export Settings</h3>
+                            <div class="form-group">
+                                <label for="exportFormat">Default Export Format</label>
+                                <select id="exportFormat">
+                                    <option value="txt">Text (.txt)</option>
+                                    <option value="md">Markdown (.md)</option>
+                                    <option value="json">JSON (.json)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="settings-group">
+                            <h3>Budget</h3>
+                            <div class="form-group">
+                                <label for="monthlyBudget">Monthly Budget (USD, 0 = disabled)</label>
+                                <input type="number" id="monthlyBudget" min="0" step="0.5" value="0" placeholder="0.00">
+                                <small>You'll get a warning at 80% and a block at 100%.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="aboutTab" role="tabpanel">
+                        <div class="settings-group">
+                            <h3>Image Description Generator</h3>
+                            <p>Version 2.2.0</p>
+                            <p>An AI-powered tool for generating image descriptions and Midjourney prompts.</p>
+                            <p>Supports OpenAI, Anthropic, and Google providers simultaneously.</p>
+                            <div id="updateInfo" class="update-info" aria-live="polite"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Modal -->
+        <div id="dashboardModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="dashboardModalTitle">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h2 id="dashboardModalTitle">Usage Dashboard</h2>
+                    <button class="btn-close" id="closeDashboardModal" aria-label="Close dashboard">
+                        <svg class="icon" aria-hidden="true"><use href="#icon-close"/></svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Overall stats -->
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon" aria-hidden="true">
+                                <svg class="icon icon-lg"><use href="#icon-camera"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="statTotalImages">0</span>
+                                <span class="stat-label">Total Images</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" aria-hidden="true">
+                                <svg class="icon icon-lg"><use href="#icon-dollar"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="statTotalCost">$0.00</span>
+                                <span class="stat-label">Total Cost</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" aria-hidden="true">
+                                <svg class="icon icon-lg"><use href="#icon-hash"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="statTotalTokens">0</span>
+                                <span class="stat-label">Total Tokens</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" aria-hidden="true">
+                                <svg class="icon icon-lg"><use href="#icon-chart"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="statAvgCost">$0.00</span>
+                                <span class="stat-label">Avg per Image</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- IMPROVEMENT 7: Per-provider breakdown -->
+                    <div class="settings-group settings-group--mt">
+                        <h3>By Provider</h3>
+                        <div id="providerStats" class="provider-stats-table" aria-label="Stats by provider">
+                            <p class="empty-state">No per-provider data yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onboarding Modal -->
+        <div id="onboardingModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="onboardingModalTitle">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="onboardingModalTitle">Welcome!</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="onboarding-content">
+                        <h3>Quick Start Guide</h3>
+                        <ul>
+                            <li><strong>Single Image:</strong> Drop an image and click "Generate Description"</li>
+                            <li><strong>Batch Process:</strong> Process multiple images at once (queue saves on exit)</li>
+                            <li><strong>Compare:</strong> Generate 3 variations and pick the best</li>
+                            <li><strong>History:</strong> Access your past generations anytime</li>
+                            <li><strong>Templates:</strong> Save your favourite settings</li>
+                            <li><strong>Multi-provider:</strong> Add OpenAI, Anthropic, and Google keys in Settings</li>
+                        </ul>
+                        <h4>Keyboard Shortcuts</h4>
+                        <ul>
+                            <li><kbd>Ctrl+V</kbd> — Paste image from clipboard</li>
+                            <li><kbd>Ctrl+Enter</kbd> — Generate description</li>
+                            <li><kbd>Ctrl+/</kbd> — Keyboard shortcuts panel</li>
+                            <li><kbd>Esc</kbd> — Close modal</li>
+                        </ul>
+                    </div>
+                    <div class="onboarding-actions">
+                        <button class="btn-primary" id="closeOnboardingBtn">Got it!</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Save Modal -->
+    <div id="templateModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="templateModalTitle">
+        <div class="modal-content modal-content--sm">
+            <h2 id="templateModalTitle">Save Template</h2>
+            <div class="form-group">
+                <label for="templateNameInput">Template Name</label>
+                <input type="text" id="templateNameInput" placeholder="e.g., Product Photography" maxlength="50" aria-required="true">
+                <small>Give your template a memorable name</small>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelTemplateBtn">Cancel</button>
+                <button class="btn-primary" id="saveTemplateConfirmBtn">Save Template</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div id="shortcutsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="shortcutsModalTitle">
+        <div class="modal-content modal-content--md">
+            <div class="modal-header">
+                <h2 id="shortcutsModalTitle">Keyboard Shortcuts</h2>
+                <button class="btn-close" id="closeShortcutsModal" aria-label="Close shortcuts">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-close"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="shortcuts-grid">
+                    <div class="shortcuts-section">
+                        <h3>General</h3>
+                        <div class="shortcut-row"><kbd>Ctrl</kbd>+<kbd>/</kbd><span>Show this panel</span></div>
+                        <div class="shortcut-row"><kbd>Esc</kbd><span>Close modal</span></div>
+                    </div>
+                    <div class="shortcuts-section">
+                        <h3>Single Image Mode</h3>
+                        <div class="shortcut-row"><kbd>Ctrl</kbd>+<kbd>V</kbd><span>Paste image from clipboard</span></div>
+                        <div class="shortcut-row"><kbd>Ctrl</kbd>+<kbd>Enter</kbd><span>Generate description</span></div>
+                    </div>
+                    <div class="shortcuts-section">
+                        <h3>Navigation</h3>
+                        <div class="shortcut-row"><kbd>Tab</kbd><span>Move focus forward</span></div>
+                        <div class="shortcut-row"><kbd>Shift</kbd>+<kbd>Tab</kbd><span>Move focus backward</span></div>
+                        <div class="shortcut-row"><kbd>Enter</kbd> / <kbd>Space</kbd><span>Activate drop zones / buttons</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="state/appState.js"></script>
+    <script src="services/api.js"></script>
+    <script src="utils.js"></script>
+    <script src="app.js"></script>
+    <script src="history.js"></script>
+    <script src="batch.js"></script>
+</body>
+</html>
